@@ -30,7 +30,9 @@ public class BorrowingService {
         Patron patron = patronRepository.findPatronByEmailIgnoreCase(email)
                 .orElseThrow(() -> new RuntimeException("Patron not found"));
 
-        if (book.getAvailable() && patron.getBorrowedBooks() < patron.getMembershipType().getMaxBorrowedBooks()) {
+        boolean patronMax = patron.getBorrowedBooks() < patron.getMembershipType().getMaxBorrowedBooks();
+        boolean inventoryCheck = book.getInventory() > 0;
+        if (Boolean.TRUE.equals(book.getAvailable()) && patronMax && inventoryCheck) {
             BorrowingRecord borrowingRecord = new BorrowingRecord();
             borrowingRecord.setBook(book);
             borrowingRecord.setPatron(patron);
@@ -39,10 +41,11 @@ public class BorrowingService {
 
             book.setAvailable(false);
             patron.setBorrowedBooks(patron.getBorrowedBooks() + 1);
+            book.setInventory(book.getInventory() - 1);
             bookRepository.save(book);
             patronRepository.save(patron);
             return borrowingRepository.save(borrowingRecord);
-        } else if (!book.getAvailable()) {
+        } else if (Boolean.FALSE.equals(book.getAvailable() || Boolean.FALSE.equals(inventoryCheck))) {
             throw new BookNotAvailableException("The book is not available for borrowing");
         } else {
             throw new PatronBorrowLimitExceededException("The patron has reached the maximum number of allowed books for their membership type");
@@ -60,6 +63,7 @@ public class BorrowingService {
         borrowingRecord.setReturnedDate(returnDate);
         book.setAvailable(true);
         patron.setBorrowedBooks(patron.getBorrowedBooks() - 1);
+        book.setInventory(book.getInventory() + 1);
         bookRepository.save(book);
         patronRepository.save(patron);
         return borrowingRepository.save(borrowingRecord);

@@ -47,7 +47,6 @@ public class BookServiceImplTest {
 
     @Test
     void testSaveBook() {
-        // Arrange
         BookDto bookDto = new BookDto();
         bookDto.setTitle("Book Title");
         bookDto.setAuthorEmail(Arrays.asList("author1@example.com", "author2@example.com"));
@@ -60,15 +59,12 @@ public class BookServiceImplTest {
         List<Author> authors = Arrays.asList(author1, author2);
         Book book = new Book();
         book.setAuthors(authors);
-        // Set properties of the book as needed
 
         when(authorRepository.findAllByEmailIgnoreCase(bookDto.getAuthorEmail())).thenReturn(authors);
         when(bookRepository.save(any(Book.class))).thenReturn(book);
 
-        // Act
         BookDto savedBookDto = bookService.saveBook(bookDto);
 
-        // Assert
         assertNotNull(savedBookDto);
         verify(authorRepository, times(1)).findAllByEmailIgnoreCase(bookDto.getAuthorEmail());
         verify(bookRepository, times(1)).save(any(Book.class));
@@ -76,7 +72,6 @@ public class BookServiceImplTest {
 
     @Test
     void testUpdateBook() {
-        // Arrange
         String isbn = "978-0123456789";
         BookDto bookDto = new BookDto();
         bookDto.setTitle("Updated Book Title");
@@ -88,15 +83,12 @@ public class BookServiceImplTest {
         Book updatedBook = new Book();
         updatedBook.setAuthors(authors);
 
-
         when(bookRepository.findBookByIsbn(isbn)).thenReturn(Optional.of(existingBook));
         when(authorRepository.findAllByEmailIgnoreCase(bookDto.getAuthorEmail())).thenReturn(authors);
         when(bookRepository.save(any(Book.class))).thenReturn(updatedBook);
 
-        // Act
         BookDto updatedBookDto = bookService.updateBook(isbn, bookDto);
 
-        // Assert
         assertNotNull(updatedBookDto);
         verify(bookRepository, times(1)).findBookByIsbn(isbn);
         verify(authorRepository, times(1)).findAllByEmailIgnoreCase(bookDto.getAuthorEmail());
@@ -105,27 +97,21 @@ public class BookServiceImplTest {
 
     @Test
     void testGetBook() {
-        // Arrange
         String isbn = "978-0123456789";
         Book book = new Book();
         book.setAuthors(Collections.emptyList());
-//        book.setAuthors(null); // Set authors to null to simulate the issue
 
         when(bookRepository.findBookByIsbn(isbn)).thenReturn(Optional.of(book));
 
-        // Act
         BookDto bookDto = bookService.getBook(isbn);
 
-        // Assert
         assertNotNull(bookDto);
         verify(bookRepository, times(1)).findBookByIsbn(isbn);
-
         assertEquals(Collections.emptyList(), bookDto.getAuthorEmail());
     }
 
     @Test
     void testGetAllBooks() {
-        // Arrange
         int page = 0;
         int size = 10;
 
@@ -145,10 +131,8 @@ public class BookServiceImplTest {
 
         when(bookRepository.findAll(pageRequest)).thenReturn(bookPage);
 
-        // Act
         Page<BookDto> bookDtoPage = bookService.getAllBooks(page, size);
 
-        // Assert
         assertNotNull(bookDtoPage);
         assertEquals(2, bookDtoPage.getContent().size());
         verify(bookRepository, times(1)).findAll(pageRequest);
@@ -156,16 +140,13 @@ public class BookServiceImplTest {
 
     @Test
     void testDeleteBook() {
-        // Arrange
         String isbn = "978-0123456789";
         Book book = new Book();
 
         when(bookRepository.findBookByIsbn(isbn)).thenReturn(Optional.of(book));
 
-        // Act
         String result = bookService.deleteBook(isbn);
 
-        // Assert
         assertEquals("Book successfully deleted!", result);
         verify(bookRepository, times(1)).findBookByIsbn(isbn);
         verify(bookRepository, times(1)).delete(book);

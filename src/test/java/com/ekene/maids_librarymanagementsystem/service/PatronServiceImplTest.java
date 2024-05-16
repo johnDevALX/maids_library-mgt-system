@@ -40,34 +40,17 @@ public class PatronServiceImplTest {
         patronService = new PatronServiceImpl(patronRepository, jwtUtil, systemCache);
     }
 
-//    @Test
-//    void testAddPatron() {
-//        // Arrange
-//        PatronDto patronDto = new PatronDto();
-//        patronDto.setFirstName("John");
-//        patronDto.setLastName("Doe");
-//        patronDto.setEmail("john@example.com");
-//
-//        // Act
-//        PatronDto result = patronService.addPatron(patronDto);
-//
-//        // Assert
-//        assertNotNull(result);
-//        verify(patronRepository, times(1)).save(any(Patron.class));
-//    }
-
     @Test
     void testAddPatron() {
-        // Arrange
         PatronDto patronDto = new PatronDto();
-        patronDto.setFirstName("John");
-        patronDto.setLastName("Doe");
+        patronDto.setFirstName("tolu");
+        patronDto.setLastName("eze");
         String token = "some_token";
-        String email = "john@example.com";
+        String email = "tolu@example.com";
 
         Patron patron = new Patron();
-        patron.setFirstName("John");
-        patron.setLastName("Doe");
+        patron.setFirstName("tolu");
+        patron.setLastName("eze");
         patron.setEmail(email);
 
         JwtUtil jwtUtilMock = mock(JwtUtil.class);
@@ -77,13 +60,11 @@ public class PatronServiceImplTest {
 
         PatronServiceImpl patronService = new PatronServiceImpl(patronRepository, jwtUtilMock, systemCache);
 
-        // Act
         PatronDto result = patronService.addPatron(patronDto, token);
 
-        // Assert
         assertNotNull(result);
-        assertEquals("John", result.getFirstName());
-        assertEquals("Doe", result.getLastName());
+        assertEquals("tolu", result.getFirstName());
+        assertEquals("eze", result.getLastName());
         assertEquals(email, result.getEmail());
         verify(jwtUtilMock, times(1)).extractUsername(token);
         verify(patronRepository, times(1)).save(any(Patron.class));
@@ -91,62 +72,55 @@ public class PatronServiceImplTest {
 
     @Test
     void testUpdatePatron() {
-        // Arrange
-        String email = "john@example.com";
+        String email = "tolu@example.com";
         PatronDto patronDto = new PatronDto();
-        patronDto.setFirstName("John");
-        patronDto.setLastName("Doe");
-        patronDto.setEmail("john@example.com");
+        patronDto.setFirstName("tolu");
+        patronDto.setLastName("eze");
+        patronDto.setEmail("tolu@example.com");
 
         Patron existingPatron = new Patron();
-        existingPatron.setFirstName("Jane");
-        existingPatron.setLastName("Smith");
-        existingPatron.setEmail("jane@example.com");
+        existingPatron.setFirstName("Okoro");
+        existingPatron.setLastName("ola");
+        existingPatron.setEmail("okoro@example.com");
 
         Patron updatedPatron = new Patron();
-        updatedPatron.setFirstName("John");
-        updatedPatron.setLastName("Doe");
-        updatedPatron.setEmail("john@example.com");
+        updatedPatron.setFirstName("tolu");
+        updatedPatron.setLastName("eze");
+        updatedPatron.setEmail("tolu@example.com");
 
         when(patronRepository.findPatronByEmailIgnoreCase(email)).thenReturn(Optional.of(existingPatron));
         when(patronRepository.save(any(Patron.class))).thenReturn(updatedPatron);
 
-        // Act
         PatronDto result = patronService.updatePatron(email, patronDto);
 
-        // Assert
         assertNotNull(result);
-        assertEquals("John", result.getFirstName());
-        assertEquals("Doe", result.getLastName());
-        assertEquals("john@example.com", result.getEmail());
+        assertEquals("tolu", result.getFirstName());
+        assertEquals("eze", result.getLastName());
+        assertEquals("tolu@example.com", result.getEmail());
         verify(patronRepository, times(1)).findPatronByEmailIgnoreCase(email);
         verify(patronRepository, times(1)).save(any(Patron.class));
     }
 
     @Test
     void testGetPatron() {
-        // Arrange
-        String email = "john@example.com";
+        String email = "tolu@example.com";
         Patron patron = new Patron();
-        patron.setFirstName("John");
-        patron.setLastName("Doe");
-        patron.setEmail("john@example.com");
+        patron.setFirstName("tolu");
+        patron.setLastName("eze");
+        patron.setEmail("tolu@example.com");
 
         when(patronRepository.findPatronByEmailIgnoreCase(email)).thenReturn(Optional.of(patron));
 
-        // Act
         PatronDto result = patronService.getPatron(email);
 
-        // Assert
         assertNotNull(result);
-        assertEquals("John", result.getFirstName());
-        assertEquals("Doe", result.getLastName());
-        assertEquals("john@example.com", result.getEmail());
+        assertEquals("tolu", result.getFirstName());
+        assertEquals("eze", result.getLastName());
+        assertEquals("tolu@example.com", result.getEmail());
     }
 
     @Test
     void testGetAllPatrons() {
-        // Arrange
         int page = 0;
         int size = 10;
         PageRequest pageRequest = PageRequest.of(page, size);
@@ -155,10 +129,8 @@ public class PatronServiceImplTest {
 
         when(patronRepository.findAll(pageRequest)).thenReturn(patronPage);
 
-        // Act
         Page<PatronDto> result = patronService.getAllPatrons(size, page);
 
-        // Assert
         assertNotNull(result);
         assertEquals(2, result.getContent().size());
         verify(patronRepository, times(1)).findAll(pageRequest);
@@ -166,18 +138,15 @@ public class PatronServiceImplTest {
 
     @Test
     void testDeletePatron() {
-        // Arrange
-        String email = "john@example.com";
+        String email = "tolu@example.com";
         Patron patron = new Patron();
-        patron.setEmail("john@example.com");
+        patron.setEmail("tolu@example.com");
 
         when(patronRepository.findPatronByEmailIgnoreCase(email)).thenReturn(Optional.of(patron));
 
-        // Act
         String result = patronService.deletePatron(email);
 
-        // Assert
-        assertEquals("Patron account with john@example.com, successfully deleted!", result);
+        assertEquals("Patron account with tolu@example.com, successfully deleted!", result);
         verify(patronRepository, times(1)).findPatronByEmailIgnoreCase(email);
         verify(patronRepository, times(1)).delete(patron);
     }

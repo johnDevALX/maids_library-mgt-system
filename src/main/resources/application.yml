@@ -1,22 +1,5 @@
 spring:
   application:
     name: maids_library-management-system
-
-
-  datasource:
-    url: jdbc:postgresql://localhost:5432/lms
-    username: postgres
-    password: postgres
-    driver-class-name: org.postgresql.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-
-    show-sql: true
-    database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-
-app:
-  secret: 482B4D6251655468576D5A7134743777397A24432646294A404E635266556A58
-  redis-conn: redis://localhost:6379
+  profiles:
+    active: local
