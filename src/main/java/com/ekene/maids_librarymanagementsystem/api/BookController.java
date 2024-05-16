@@ -12,32 +12,32 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/v1/books")
+@RequestMapping("/api/books")
 @RequiredArgsConstructor
 public class BookController extends BaseController {
     private final BookService bookService;
     private final AuthorService authorService;
 
-    @PostMapping("/create")
+    @PostMapping()
     public ResponseEntity<?> saveBook(@RequestBody BookDto bookDto) {
         return getAppResponse(HttpStatus.CREATED, "saved successfully", bookService.saveBook(bookDto));
     }
 
-    @PutMapping("/update/{isbn}")
-    public ResponseEntity<?> updateBook(@PathVariable String isbn, @RequestBody BookDto bookDto) {
-        return getAppResponse(HttpStatus.OK, "Updated successfully", bookService.updateBook(isbn, bookDto));
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateBook(@PathVariable Long id, @RequestBody BookDto bookDto) {
+        return getAppResponse(HttpStatus.OK, "Updated successfully", bookService.updateBook(id, bookDto));
     }
 
-    @GetMapping("/get/{isbn}")
-    public ResponseEntity<?> getBook(@PathVariable String isbn) {
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getBook(@PathVariable Long id) {
         try {
-            return getAppResponse(HttpStatus.OK, "Retrieved successfully", bookService.getBook(isbn));
+            return getAppResponse(HttpStatus.OK, "Retrieved successfully", bookService.getBook(id));
         } catch (BookNotFound ex){
-            return new ResponseEntity<>("Book with this isbn " + isbn + " number not found", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Book with this id " + id + " number not found", HttpStatus.BAD_REQUEST);
         }
     }
 
-    @GetMapping("/get/all")
+    @GetMapping()
     public ResponseEntity<?> getAllBooks(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -45,9 +45,9 @@ public class BookController extends BaseController {
         return getAppResponse(HttpStatus.OK, "All books retrieved successfully", bookService.getAllBooks(page, size));
     }
 
-    @DeleteMapping("/delete/{isbn}")
-    public ResponseEntity<?> deleteBook(@PathVariable String isbn) {
-        return getAppResponse(HttpStatus.OK, "book Deletion is successfully", bookService.deleteBook(isbn));
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteBook(@PathVariable Long id) {
+        return getAppResponse(HttpStatus.OK, "book Deletion is successfully", bookService.deleteBook(id));
     }
 
     @PostMapping("/add/author")

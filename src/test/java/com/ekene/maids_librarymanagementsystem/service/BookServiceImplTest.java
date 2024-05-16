@@ -72,7 +72,7 @@ public class BookServiceImplTest {
 
     @Test
     void testUpdateBook() {
-        String isbn = "978-0123456789";
+        Long id = 978L;
         BookDto bookDto = new BookDto();
         bookDto.setTitle("Updated Book Title");
         bookDto.setAuthorEmail(Arrays.asList("author1@example.com", "author2@example.com"));
@@ -83,30 +83,30 @@ public class BookServiceImplTest {
         Book updatedBook = new Book();
         updatedBook.setAuthors(authors);
 
-        when(bookRepository.findBookByIsbn(isbn)).thenReturn(Optional.of(existingBook));
+        when(bookRepository.findById(id)).thenReturn(Optional.of(existingBook));
         when(authorRepository.findAllByEmailIgnoreCase(bookDto.getAuthorEmail())).thenReturn(authors);
         when(bookRepository.save(any(Book.class))).thenReturn(updatedBook);
 
-        BookDto updatedBookDto = bookService.updateBook(isbn, bookDto);
+        BookDto updatedBookDto = bookService.updateBook(id, bookDto);
 
         assertNotNull(updatedBookDto);
-        verify(bookRepository, times(1)).findBookByIsbn(isbn);
+        verify(bookRepository, times(1)).findById(id);
         verify(authorRepository, times(1)).findAllByEmailIgnoreCase(bookDto.getAuthorEmail());
         verify(bookRepository, times(1)).save(any(Book.class));
     }
 
     @Test
     void testGetBook() {
-        String isbn = "978-0123456789";
+        Long id = 978L;
         Book book = new Book();
         book.setAuthors(Collections.emptyList());
 
-        when(bookRepository.findBookByIsbn(isbn)).thenReturn(Optional.of(book));
+        when(bookRepository.findById(id)).thenReturn(Optional.of(book));
 
-        BookDto bookDto = bookService.getBook(isbn);
+        BookDto bookDto = bookService.getBook(id);
 
         assertNotNull(bookDto);
-        verify(bookRepository, times(1)).findBookByIsbn(isbn);
+        verify(bookRepository, times(1)).findById(id);
         assertEquals(Collections.emptyList(), bookDto.getAuthorEmail());
     }
 
@@ -140,15 +140,15 @@ public class BookServiceImplTest {
 
     @Test
     void testDeleteBook() {
-        String isbn = "978-0123456789";
+        Long id = 978L;
         Book book = new Book();
 
-        when(bookRepository.findBookByIsbn(isbn)).thenReturn(Optional.of(book));
+        when(bookRepository.findById(id)).thenReturn(Optional.of(book));
 
-        String result = bookService.deleteBook(isbn);
+        String result = bookService.deleteBook(id);
 
         assertEquals("Book successfully deleted!", result);
-        verify(bookRepository, times(1)).findBookByIsbn(isbn);
+        verify(bookRepository, times(1)).findById(id);
         verify(bookRepository, times(1)).delete(book);
     }
 }

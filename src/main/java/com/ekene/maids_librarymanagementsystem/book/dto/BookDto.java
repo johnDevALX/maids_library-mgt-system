@@ -1,12 +1,11 @@
 package com.ekene.maids_librarymanagementsystem.book.dto;
 
-import com.ekene.maids_librarymanagementsystem.book.model.Author;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -14,10 +13,11 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class BookDto {
+    private Long id;
     private String title;
     private String publisher;
     private String isbn;
-    private LocalDateTime publicationDate;
+    private LocalDate publicationDate;
     private String genre;
     private String language;
     private Integer numberOfPages;

@@ -27,7 +27,6 @@ public class AuthService {
 
     public ReturnObj createLmsUser (UserDto userDto){
         LmsUser.LmsUserBuilder builder = LmsUser.builder();
-        builder.fullName(userDto.getFullName());
         builder.email(userDto.getEmail());
         builder.password(passwordEncoder.encode(userDto.getPassword()));
         builder.role(userDto.getRole());

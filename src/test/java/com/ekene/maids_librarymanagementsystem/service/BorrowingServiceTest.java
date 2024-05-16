@@ -43,26 +43,28 @@ public class BorrowingServiceTest {
 
     @Test
     void testBorrowBook_BookAvailable_PatronBelowLimit() {
-        String isbn = "978-0123456789";
-        String email = "patron@example.com";
+        Long bookId = 978L;
+        Long patronId = 9L;
         Book book = new Book();
+        book.setId(bookId);
         book.setAvailable(true);
         book.setInventory(2);
         Patron patron = new Patron();
+        patron.setId(patronId);
         patron.setBorrowedBooks(0);
         patron.setMembershipType(MembershipType.REGULAR);
 
-        when(bookRepository.findBookByIsbn(isbn)).thenReturn(Optional.of(book));
-        when(patronRepository.findPatronByEmailIgnoreCase(email)).thenReturn(Optional.of(patron));
+        when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
+        when(patronRepository.findById(patronId)).thenReturn(Optional.of(patron));
         when(borrowingRepository.save(any(BorrowingRecord.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        BorrowingRecord borrowingRecord = borrowingService.borrowBook(isbn, email);
+        BorrowingRecord borrowingRecord = borrowingService.borrowBook(bookId, patronId);
 
         assertNotNull(borrowingRecord);
         assertEquals(book, borrowingRecord.getBook());
         assertEquals(patron, borrowingRecord.getPatron());
         assertEquals(LocalDate.now(), borrowingRecord.getBorrowedDate());
-        assertFalse(book.getAvailable());
+        assertTrue(book.getAvailable());
         assertEquals(1, book.getInventory());
         assertEquals(1, patron.getBorrowedBooks());
         verify(bookRepository, times(1)).save(book);
@@ -72,21 +74,23 @@ public class BorrowingServiceTest {
 
     @Test
     void testBorrowBook_BookNotAvailable() {
-        String isbn = "978-0123456789";
-        String email = "patron@example.com";
+        Long bookId = 978L;
+        Long patronId = 9L;
         Book book = new Book();
+        book.setId(bookId);
         book.setAvailable(false);
         book.setInventory(1);
         Patron patron = new Patron();
+        patron.setId(patronId);
         patron.setBorrowedBooks(0);
         patron.setMembershipType(MembershipType.REGULAR);
 
-        when(bookRepository.findBookByIsbn(isbn)).thenReturn(Optional.of(book));
-        when(patronRepository.findPatronByEmailIgnoreCase(email)).thenReturn(Optional.of(patron));
+        when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
+        when(patronRepository.findById(patronId)).thenReturn(Optional.of(patron));
 
-        assertThrows(BookNotAvailableException.class, () -> borrowingService.borrowBook(isbn, email));
-        verify(bookRepository, times(1)).findBookByIsbn(isbn);
-        verify(patronRepository, times(1)).findPatronByEmailIgnoreCase(email);
+        assertThrows(BookNotAvailableException.class, () -> borrowingService.borrowBook(bookId, patronId));
+        verify(bookRepository, times(1)).findById(bookId);
+        verify(patronRepository, times(1)).findById(patronId);
         verify(bookRepository, never()).save(any(Book.class));
         verify(patronRepository, never()).save(any(Patron.class));
         verify(borrowingRepository, never()).save(any(BorrowingRecord.class));
@@ -94,24 +98,25 @@ public class BorrowingServiceTest {
 
     @Test
     void testReturnBook_ValidReturn() {
-        String isbn = "978-0123456789";
-        String email = "patron@example.com";
+        Long bookId = 978L;
+        Long patronId = 9L;
         LocalDate returnDate = LocalDate.now();
         Book book = new Book();
         book.setAvailable(false);
         book.setInventory(0);
         Patron patron = new Patron();
+        patron.setId(patronId);
         patron.setBorrowedBooks(1);
         BorrowingRecord borrowingRecord = new BorrowingRecord();
         borrowingRecord.setBook(book);
         borrowingRecord.setPatron(patron);
 
-        when(bookRepository.findBookByIsbn(isbn)).thenReturn(Optional.of(book));
-        when(patronRepository.findPatronByEmailIgnoreCase(email)).thenReturn(Optional.of(patron));
+        when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
+        when(patronRepository.findById(patronId)).thenReturn(Optional.of(patron));
         when(borrowingRepository.findByBookAndPatron(book, patron)).thenReturn(Optional.of(borrowingRecord));
         when(borrowingRepository.save(any(BorrowingRecord.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        BorrowingRecord returnedBorrowingRecord = borrowingService.returnBook(isbn, email, returnDate);
+        BorrowingRecord returnedBorrowingRecord = borrowingService.returnBook(bookId, patronId, returnDate);
 
         assertNotNull(returnedBorrowingRecord);
         assertEquals(book, returnedBorrowingRecord.getBook());
@@ -128,15 +133,15 @@ public class BorrowingServiceTest {
 
     @Test
     void testReturnBook_BookNotFound() {
-        String isbn = "978-0123456789";
-        String email = "patron@example.com";
+        Long bookId = 978L;
+        Long patronId = 9L;
         LocalDate returnDate = LocalDate.now();
 
-        when(bookRepository.findBookByIsbn(isbn)).thenReturn(Optional.empty());
+        when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
 
-        assertThrows(BookNotFound.class, () -> borrowingService.returnBook(isbn, email, returnDate));
-        verify(bookRepository, times(1)).findBookByIsbn(isbn);
-        verify(patronRepository, never()).findPatronByEmailIgnoreCase(anyString());
+        assertThrows(BookNotFound.class, () -> borrowingService.returnBook(bookId, patronId, returnDate));
+        verify(bookRepository, times(1)).findById(bookId);
+        verify(patronRepository, never()).findById(anyLong());
         verify(borrowingRepository, never()).findByBookAndPatron(any(Book.class), any(Patron.class));
         verify(bookRepository, never()).save(any(Book.class));
         verify(patronRepository, never()).save(any(Patron.class));

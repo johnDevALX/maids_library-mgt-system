@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class PatronDto {
+    private Long id;
     private String firstName;
     private String lastName;
     private String email;

@@ -6,11 +6,11 @@ import org.springframework.data.domain.Page;
 public interface PatronService {
     PatronDto addPatron(PatronDto patronDto, String token);
 
-    PatronDto updatePatron(String email, PatronDto patronDto);
+    PatronDto updatePatron(Long id, PatronDto patronDto);
 
-    PatronDto getPatron(String email);
+    PatronDto getPatron(Long id);
 
     Page<PatronDto> getAllPatrons(int size, int page);
 
-    String deletePatron(String email);
+    String deletePatron(Long id);
 }

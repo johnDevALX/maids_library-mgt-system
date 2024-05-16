@@ -10,8 +10,8 @@ import lombok.*;
 
 import java.time.LocalDate;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -25,13 +25,10 @@ public class BorrowingRecord extends BaseModel {
     @JoinColumn(name = "patron_id", nullable = false)
     private Patron patron;
 
-//    @Column(name = "borrowed_date", nullable = false)
     private LocalDate borrowedDate;
 
-//    @Column(name = "due_date", nullable = false)
     private LocalDate dueDate;
 
-//    @Column(name = "returned_date")
     private LocalDate returnedDate;
 
 }

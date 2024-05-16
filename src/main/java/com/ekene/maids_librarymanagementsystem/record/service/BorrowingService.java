@@ -4,7 +4,9 @@ import com.ekene.maids_librarymanagementsystem.book.model.Book;
 import com.ekene.maids_librarymanagementsystem.book.repository.BookRepository;
 import com.ekene.maids_librarymanagementsystem.exception.BookNotAvailableException;
 import com.ekene.maids_librarymanagementsystem.exception.BookNotFound;
+import com.ekene.maids_librarymanagementsystem.exception.BorrowingRecordNotFound;
 import com.ekene.maids_librarymanagementsystem.exception.PatronBorrowLimitExceededException;
+import com.ekene.maids_librarymanagementsystem.exception.PatronNotFound;
 import com.ekene.maids_librarymanagementsystem.patron.model.MembershipType;
 import com.ekene.maids_librarymanagementsystem.patron.model.Patron;
 import com.ekene.maids_librarymanagementsystem.patron.repository.PatronRepository;
@@ -24,11 +26,11 @@ public class BorrowingService {
     private final PatronRepository patronRepository;
     private final BorrowingRepository borrowingRepository;
 
-    public BorrowingRecord borrowBook(String isbn, String email) {
-        Book book = bookRepository.findBookByIsbn(isbn)
+    public BorrowingRecord borrowBook(Long bookId, Long patronId) {
+        Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new BookNotFound("Book not found"));
-        Patron patron = patronRepository.findPatronByEmailIgnoreCase(email)
-                .orElseThrow(() -> new RuntimeException("Patron not found"));
+        Patron patron = patronRepository.findById(patronId)
+                .orElseThrow(() -> new PatronNotFound("Patron not found"));
 
         boolean patronMax = patron.getBorrowedBooks() < patron.getMembershipType().getMaxBorrowedBooks();
         boolean inventoryCheck = book.getInventory() > 0;
@@ -39,9 +41,9 @@ public class BorrowingService {
             borrowingRecord.setBorrowedDate(LocalDate.now());
             borrowingRecord.setDueDate(calculateDueDate(patron.getMembershipType()));
 
-            book.setAvailable(false);
             patron.setBorrowedBooks(patron.getBorrowedBooks() + 1);
             book.setInventory(book.getInventory() - 1);
+            book.setAvailable(book.getInventory() > 0);
             bookRepository.save(book);
             patronRepository.save(patron);
             return borrowingRepository.save(borrowingRecord);
@@ -52,13 +54,13 @@ public class BorrowingService {
         }
     }
 
-    public BorrowingRecord returnBook(String isbn, String email, LocalDate returnDate) {
-        Book book = bookRepository.findBookByIsbn(isbn)
+    public BorrowingRecord returnBook(Long bookId, Long patronId, LocalDate returnDate) {
+        Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new BookNotFound("Book not found"));
-        Patron patron = patronRepository.findPatronByEmailIgnoreCase(email)
-                .orElseThrow(() -> new RuntimeException("Patron not found"));
+        Patron patron = patronRepository.findById(patronId)
+                .orElseThrow(() -> new PatronNotFound("Patron not found"));
         BorrowingRecord borrowingRecord = borrowingRepository.findByBookAndPatron(book, patron)
-                .orElseThrow(() -> new RuntimeException("Borrowing record not found"));
+                .orElseThrow(() -> new BorrowingRecordNotFound("Borrowing record not found"));
 
         borrowingRecord.setReturnedDate(returnDate);
         book.setAvailable(true);

@@ -14,7 +14,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "author")
 public class Author extends BaseModel {
     private String email;
     private String firstName;

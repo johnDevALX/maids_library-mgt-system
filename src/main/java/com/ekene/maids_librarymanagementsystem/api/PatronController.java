@@ -1,6 +1,5 @@
 package com.ekene.maids_librarymanagementsystem.api;
 
-import com.ekene.maids_librarymanagementsystem.book.dto.BookDto;
 import com.ekene.maids_librarymanagementsystem.patron.dto.PatronDto;
 import com.ekene.maids_librarymanagementsystem.patron.service.PatronService;
 import com.ekene.maids_librarymanagementsystem.utils.BaseController;
@@ -9,15 +8,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpServerErrorException;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/patron")
+@RequestMapping("/api/patrons")
 public class PatronController extends BaseController {
 
     private final PatronService patronService;
-    @PostMapping("/create")
+    @PostMapping()
     public ResponseEntity<?> savePatron(HttpServletRequest request, @RequestBody PatronDto patronDto) {
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -27,17 +25,17 @@ public class PatronController extends BaseController {
         return new ResponseEntity<>(new RuntimeException(), HttpStatus.BAD_REQUEST);
     }
 
-    @PutMapping("/update/{email}")
-    public ResponseEntity<?> updatePatron(@PathVariable String email, @RequestBody PatronDto patronDto) {
-        return getAppResponse(HttpStatus.OK, "Updated successfully", patronService.updatePatron(email, patronDto));
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updatePatron(@PathVariable Long id, @RequestBody PatronDto patronDto) {
+        return getAppResponse(HttpStatus.OK, "Updated successfully", patronService.updatePatron(id, patronDto));
     }
 
-    @GetMapping("/get/{email}")
-    public ResponseEntity<?> getPatron(@PathVariable String email) {
-        return getAppResponse(HttpStatus.OK, "Retrieved successfully", patronService.getPatron(email));
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getPatron(@PathVariable Long id) {
+        return getAppResponse(HttpStatus.OK, "Retrieved successfully", patronService.getPatron(id));
     }
 
-    @GetMapping("/get/all")
+    @GetMapping()
     public ResponseEntity<?> getAllPatrons(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
@@ -45,8 +43,8 @@ public class PatronController extends BaseController {
         return getAppResponse(HttpStatus.OK, "All patrons retrieved successfully", patronService.getAllPatrons(size, page));
     }
 
-    @DeleteMapping("/delete/{email}")
-    public ResponseEntity<?> deleteBook(@PathVariable String email) {
-        return getAppResponse(HttpStatus.OK, "patron Deletion is successfully", patronService.deletePatron(email));
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteBook(@PathVariable Long id) {
+        return getAppResponse(HttpStatus.OK, "patron Deletion is successfully", patronService.deletePatron(id));
     }
 }

@@ -72,51 +72,51 @@ public class PatronServiceImplTest {
 
     @Test
     void testUpdatePatron() {
-        String email = "tolu@example.com";
+        Long id = 9L;
         PatronDto patronDto = new PatronDto();
         patronDto.setFirstName("tolu");
         patronDto.setLastName("eze");
-        patronDto.setEmail("tolu@example.com");
+        patronDto.setId(id);
 
         Patron existingPatron = new Patron();
         existingPatron.setFirstName("Okoro");
         existingPatron.setLastName("ola");
-        existingPatron.setEmail("okoro@example.com");
+        existingPatron.setId(8L);
 
         Patron updatedPatron = new Patron();
         updatedPatron.setFirstName("tolu");
         updatedPatron.setLastName("eze");
-        updatedPatron.setEmail("tolu@example.com");
+        updatedPatron.setId(id);
 
-        when(patronRepository.findPatronByEmailIgnoreCase(email)).thenReturn(Optional.of(existingPatron));
+        when(patronRepository.findById(id)).thenReturn(Optional.of(existingPatron));
         when(patronRepository.save(any(Patron.class))).thenReturn(updatedPatron);
 
-        PatronDto result = patronService.updatePatron(email, patronDto);
+        PatronDto result = patronService.updatePatron(id, patronDto);
 
         assertNotNull(result);
         assertEquals("tolu", result.getFirstName());
         assertEquals("eze", result.getLastName());
-        assertEquals("tolu@example.com", result.getEmail());
-        verify(patronRepository, times(1)).findPatronByEmailIgnoreCase(email);
+        assertEquals(9L, result.getId());
+        verify(patronRepository, times(1)).findById(id);
         verify(patronRepository, times(1)).save(any(Patron.class));
     }
 
     @Test
     void testGetPatron() {
-        String email = "tolu@example.com";
+        Long id = 9L;
         Patron patron = new Patron();
         patron.setFirstName("tolu");
         patron.setLastName("eze");
-        patron.setEmail("tolu@example.com");
+        patron.setId(id);
 
-        when(patronRepository.findPatronByEmailIgnoreCase(email)).thenReturn(Optional.of(patron));
+        when(patronRepository.findById(id)).thenReturn(Optional.of(patron));
 
-        PatronDto result = patronService.getPatron(email);
+        PatronDto result = patronService.getPatron(id);
 
         assertNotNull(result);
         assertEquals("tolu", result.getFirstName());
         assertEquals("eze", result.getLastName());
-        assertEquals("tolu@example.com", result.getEmail());
+        assertEquals(9L, result.getId());
     }
 
     @Test
@@ -138,16 +138,16 @@ public class PatronServiceImplTest {
 
     @Test
     void testDeletePatron() {
-        String email = "tolu@example.com";
+        Long id = 9L;
         Patron patron = new Patron();
-        patron.setEmail("tolu@example.com");
+        patron.setId(id);
 
-        when(patronRepository.findPatronByEmailIgnoreCase(email)).thenReturn(Optional.of(patron));
+        when(patronRepository.findById(id)).thenReturn(Optional.of(patron));
 
-        String result = patronService.deletePatron(email);
+        String result = patronService.deletePatron(id);
 
-        assertEquals("Patron account with tolu@example.com, successfully deleted!", result);
-        verify(patronRepository, times(1)).findPatronByEmailIgnoreCase(email);
+        assertEquals("Patron account with 9, successfully deleted!", result);
+        verify(patronRepository, times(1)).findById(id);
         verify(patronRepository, times(1)).delete(patron);
     }
 }

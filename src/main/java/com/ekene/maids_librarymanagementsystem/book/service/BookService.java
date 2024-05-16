@@ -7,11 +7,11 @@ import org.springframework.data.domain.Page;
 public interface BookService {
     BookDto saveBook(BookDto bookDto);
 
-    BookDto updateBook(String isbn, BookDto bookDto);
+    BookDto updateBook(Long id, BookDto bookDto);
 
-    BookDto getBook(String isbn);
+    BookDto getBook(Long id);
 
     Page<BookDto> getAllBooks(int page, int size);
 
-    String deleteBook(String isbn);
+    String deleteBook(Long id);
 }

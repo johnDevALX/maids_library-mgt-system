@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,9 +41,9 @@ public class BookServiceImpl implements BookService{
 
     @Override
     @Transactional
-    public BookDto updateBook(String isbn, BookDto bookDto) {
-        Book existingBook = bookRepository.findBookByIsbn(isbn)
-                .orElseThrow(() -> new BookNotFound("Book not found with ISBN: " + isbn));
+    public BookDto updateBook(Long id, BookDto bookDto) {
+        Book existingBook = bookRepository.findById(id)
+                .orElseThrow(() -> new BookNotFound("Book not found with id: " + id));
 
         List<Author> authors = new ArrayList<>(authorRepository.findAllByEmailIgnoreCase(bookDto.getAuthorEmail()));
 
@@ -57,7 +56,6 @@ public class BookServiceImpl implements BookService{
         existingBook.setNumberOfPages(bookDto.getNumberOfPages() != null ? bookDto.getNumberOfPages() : existingBook.getNumberOfPages());
         existingBook.setDescription(bookDto.getDescription() != null ? bookDto.getDescription() : existingBook.getDescription());
         existingBook.setRating(bookDto.getRating() != null ? bookDto.getRating() : existingBook.getRating());
-        existingBook.setPrice(bookDto.getPrice() != null ? bookDto.getPrice() : existingBook.getPrice());
         existingBook.setAuthors(authors);
         existingBook.setAvailable(bookDto.getAvailable() != null ? bookDto.getAvailable() : existingBook.getAvailable());
         existingBook.setInventory(bookDto.getInventory() != null ? bookDto.getInventory() : existingBook.getInventory());
@@ -68,10 +66,10 @@ public class BookServiceImpl implements BookService{
     }
 
     @Override
-    public BookDto getBook(String isbn) {
-        Book book = systemCache.getBook(isbn);
+    public BookDto getBook(Long id) {
+        Book book = systemCache.getBook(id);
         if (Objects.isNull(book)){
-            book = bookRepository.findBookByIsbn(isbn).orElseThrow(BookNotFound::new);
+            book = bookRepository.findById(id).orElseThrow(BookNotFound::new);
         }
         return JsonMapper.convertBookToDto(book);
     }
@@ -94,8 +92,8 @@ public class BookServiceImpl implements BookService{
     }
 
     @Override
-    public String deleteBook(String isbn) {
-        Book book = bookRepository.findBookByIsbn(isbn).orElseThrow(BookNotFound::new);
+    public String deleteBook(Long id) {
+        Book book = bookRepository.findById(id).orElseThrow(BookNotFound::new);
         bookRepository.delete(book);
         return "Book successfully deleted!";
     }

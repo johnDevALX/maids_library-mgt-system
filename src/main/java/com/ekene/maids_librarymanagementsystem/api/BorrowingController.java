@@ -13,14 +13,14 @@ import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/v1/record/")
+@RequestMapping("/api")
 public class BorrowingController extends BaseController {
     private final BorrowingService borrowingService;
 
-    @PostMapping("/borrow/{isbn}/patron/{email}")
-    public ResponseEntity<?> borrowBook(@PathVariable String isbn, @PathVariable String email) {
+    @PostMapping("/borrow/{bookId}/patron/{patronId}")
+    public ResponseEntity<?> borrowBook(@PathVariable Long bookId, @PathVariable Long patronId) {
         try {
-            return getAppResponse(HttpStatus.OK, "Success", borrowingService.borrowBook(isbn, email));
+            return getAppResponse(HttpStatus.OK, "Success", borrowingService.borrowBook(bookId, patronId));
         } catch (BookNotAvailableException | PatronBorrowLimitExceededException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (Exception ex) {
@@ -28,8 +28,8 @@ public class BorrowingController extends BaseController {
         }
     }
 
-    @PutMapping("/return/{isbn}/patron/{email}")
-    public ResponseEntity<?> returnBook(@PathVariable String isbn, @PathVariable String email) {
-        return getAppResponse(HttpStatus.OK, "returned successfully", borrowingService.returnBook(isbn, email, LocalDate.now()));
+    @PutMapping("/return/{bookId}/patron/{patronId}")
+    public ResponseEntity<?> returnBook(@PathVariable Long bookId, @PathVariable Long patronId) {
+        return getAppResponse(HttpStatus.OK, "returned successfully", borrowingService.returnBook(bookId, patronId, LocalDate.now()));
     }
 }

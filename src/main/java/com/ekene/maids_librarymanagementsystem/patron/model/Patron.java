@@ -7,8 +7,8 @@ import lombok.*;
 
 import java.time.LocalDate;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -23,7 +23,5 @@ public class Patron extends BaseModel {
     private LocalDate membershipStartDate;
     private LocalDate membershipEndDate;
     private MembershipType membershipType;
-//    private boolean isActive;
     private int borrowedBooks;
-//    private int maxAllowedBooks;
 }

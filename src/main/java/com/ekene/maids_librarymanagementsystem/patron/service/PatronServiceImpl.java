@@ -2,7 +2,6 @@ package com.ekene.maids_librarymanagementsystem.patron.service;
 
 import com.ekene.maids_librarymanagementsystem.auth.JwtUtil;
 import com.ekene.maids_librarymanagementsystem.cache.SystemCache;
-import com.ekene.maids_librarymanagementsystem.exception.BookNotFound;
 import com.ekene.maids_librarymanagementsystem.exception.PatronNotFound;
 import com.ekene.maids_librarymanagementsystem.patron.dto.PatronDto;
 import com.ekene.maids_librarymanagementsystem.patron.model.Patron;
@@ -38,9 +37,9 @@ public class PatronServiceImpl implements PatronService{
 
     @Override
     @Transactional
-    public PatronDto updatePatron(String email, PatronDto patronDto) {
-        Patron existingPatron = patronRepository.findPatronByEmailIgnoreCase(email)
-                .orElseThrow(() -> new PatronNotFound("Patron not found with email: " + email));
+    public PatronDto updatePatron(Long id, PatronDto patronDto) {
+        Patron existingPatron = patronRepository.findById(id)
+                .orElseThrow(() -> new PatronNotFound("Patron not found with id: " + id));
 
         existingPatron.setFirstName(patronDto.getFirstName() != null ? patronDto.getFirstName() : existingPatron.getFirstName());
         existingPatron.setLastName(patronDto.getLastName() != null ? patronDto.getLastName() : existingPatron.getLastName());
@@ -58,11 +57,11 @@ public class PatronServiceImpl implements PatronService{
     }
 
     @Override
-    public PatronDto getPatron(String email) {
-        Patron existingPatron = systemCache.getPatron(email);
+    public PatronDto getPatron(Long id) {
+        Patron existingPatron = systemCache.getPatron(id);
         if (Objects.isNull(existingPatron)){
-               existingPatron = patronRepository.findPatronByEmailIgnoreCase(email)
-                .orElseThrow(RuntimeException::new);
+               existingPatron = patronRepository.findById(id)
+                .orElseThrow(PatronNotFound::new);
         }
         return JsonMapper.convertPatronToDto(existingPatron);
     }
@@ -80,10 +79,10 @@ public class PatronServiceImpl implements PatronService{
     }
 
     @Override
-    public String deletePatron(String email) {
-        Patron patron = patronRepository.findPatronByEmailIgnoreCase(email)
-                .orElseThrow(RuntimeException::new);
+    public String deletePatron(Long id) {
+        Patron patron = patronRepository.findById(id)
+                .orElseThrow(PatronNotFound::new);
         patronRepository.delete(patron);
-        return "Patron account with " + email + ", successfully deleted!";
+        return "Patron account with " + id + ", successfully deleted!";
     }
 }

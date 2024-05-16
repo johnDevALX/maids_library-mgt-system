@@ -24,7 +24,7 @@ public class SystemCache {
             return;
         }
         getBookMap().setMaxSize(2000, EvictionMode.LRU);
-        getBookMap().put(book.getIsbn(), book, 14, TimeUnit.DAYS);
+        getBookMap().put(book.getId(), book, 14, TimeUnit.DAYS);
     }
 
     @SneakyThrows
@@ -33,23 +33,23 @@ public class SystemCache {
             return;
         }
         getPatronMap().setMaxSize(2000, EvictionMode.LRU);
-        getPatronMap().put(patron.getEmail(), patron, 14, TimeUnit.DAYS);
+        getPatronMap().put(patron.getId(), patron, 14, TimeUnit.DAYS);
     }
 
     @SneakyThrows
-    public Book getBook(String isbn) {
-        return getBookMap().get(isbn);
+    public Book getBook(Long id) {
+        return getBookMap().get(id);
     }
-    private RMapCache<String, Book> getBookMap() {
+    private RMapCache<Long, Book> getBookMap() {
         var bookCache = String.join(".", "maids.cc.library.mgt.system.recent.books");
         return this.redissonClient.getMapCache(bookCache);
     }
 
     @SneakyThrows
-    public Patron getPatron(String email) {
-        return getPatronMap().get(email);
+    public Patron getPatron(Long id) {
+        return getPatronMap().get(id);
     }
-    private RMapCache<String, Patron> getPatronMap() {
+    private RMapCache<Long, Patron> getPatronMap() {
         var patronCache = String.join(".", "maids.cc.library.mgt.system.recent.patron");
         return this.redissonClient.getMapCache(patronCache);
     }
