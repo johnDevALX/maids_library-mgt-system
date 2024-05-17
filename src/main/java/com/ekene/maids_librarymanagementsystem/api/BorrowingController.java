@@ -25,7 +25,7 @@ public class BorrowingController extends BaseController {
         } catch (BookNotAvailableException | PatronBorrowLimitExceededException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (MultipleBorrowingException ex) {
-            return new ResponseEntity<>("unreturned Previous borrowed book from patron", HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>("unreturned Previous borrowed book from patron", HttpStatus.BAD_REQUEST);
         }catch (Exception ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -33,6 +33,10 @@ public class BorrowingController extends BaseController {
 
     @PutMapping("/return/{bookId}/patron/{patronId}")
     public ResponseEntity<?> returnBook(@PathVariable Long bookId, @PathVariable Long patronId) {
-        return getAppResponse(HttpStatus.OK, "returned successfully", borrowingService.returnBook(bookId, patronId, LocalDate.now()));
+        try {
+            return getAppResponse(HttpStatus.OK, "returned successfully", borrowingService.returnBook(bookId, patronId, LocalDate.now()));
+        }catch (Exception ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 }

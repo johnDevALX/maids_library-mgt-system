@@ -74,17 +74,13 @@ public class BookServiceImpl implements BookService{
     @Override
     public Page<BookDto> getAllBooks(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
-        log.info("Page request [{}]", pageRequest);
         Page<Book> all = bookRepository.findAll(pageRequest);
-
-        log.info("Page returned [{}]", all);
 
         List<BookDto> bookDtos = all.getContent()
                 .stream()
                 .map(JsonMapper::convertBookToDto)
                 .toList();
 
-        log.info("List of books returned [{}]", bookDtos);
         return new PageImpl<>(bookDtos, pageRequest, all.getTotalElements());
     }
 

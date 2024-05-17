@@ -60,14 +60,10 @@ public class PatronServiceImpl implements PatronService{
     @Override
     public PatronDto getPatron(Long id) {
         Patron existingPatron = systemCache.getPatron(id);
-        log.info("patron [{}]", existingPatron);
-        log.info("patron [{}]", existingPatron);
 
         if (Objects.isNull(existingPatron)){
                existingPatron = patronRepository.findById(id)
                 .orElseThrow(PatronNotFound::new);
-            log.info("patron [{}]", existingPatron);
-
         }
         return JsonMapper.convertPatronToDto(existingPatron);
     }

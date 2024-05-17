@@ -14,14 +14,17 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@SpringBootTest(classes = BorrowingServiceTest.class)
 public class BorrowingServiceTest {
 
     private BorrowingService borrowingService;
@@ -113,7 +116,7 @@ public class BorrowingServiceTest {
 
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
         when(patronRepository.findById(patronId)).thenReturn(Optional.of(patron));
-        when(borrowingRepository.findByBookAndPatron(book, patron)).thenReturn(Optional.of(borrowingRecord));
+        when(borrowingRepository.findAllByBookAndPatron(book, patron)).thenReturn(List.of(borrowingRecord));
         when(borrowingRepository.save(any(BorrowingRecord.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         BorrowingRecord returnedBorrowingRecord = borrowingService.returnBook(bookId, patronId, returnDate);
@@ -127,7 +130,7 @@ public class BorrowingServiceTest {
         assertEquals(0, patron.getBorrowedBooks());
         verify(bookRepository, times(1)).save(book);
         verify(patronRepository, times(1)).save(patron);
-        verify(borrowingRepository, times(1)).findByBookAndPatron(book, patron);
+        verify(borrowingRepository, times(1)).findAllByBookAndPatron(book, patron);
         verify(borrowingRepository, times(1)).save(borrowingRecord);
     }
 

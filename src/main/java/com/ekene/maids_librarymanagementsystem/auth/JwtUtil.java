@@ -2,11 +2,15 @@ package com.ekene.maids_librarymanagementsystem.auth;
 
 import com.ekene.maids_librarymanagementsystem.config.AppConfig;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +22,7 @@ import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class JwtUtil {
     private final AppConfig config;
 
@@ -41,7 +46,18 @@ public class JwtUtil {
     }
 
     private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        try {
+            return extractExpiration(token).before(new Date());
+        } catch (MalformedJwtException e) {
+            log.error("INVALID JWT TOKEN\n" + e.getMessage());
+        } catch (ExpiredJwtException e) {
+            log.error("JWT TOKEN IS EXPIRED\n" + e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            log.error("JWT TOKEN IS UNSUPPORTED\n" + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            log.error("JWT CLAIMS STRING IS EMPTY\n" + e.getMessage());
+        }
+        return false;
     }
 
     private Date extractExpiration(String token) {
@@ -52,7 +68,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setClaims(claims).setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24))
+                .setExpiration(new Date(System.currentTimeMillis() + config.getExpirationDuration()))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }

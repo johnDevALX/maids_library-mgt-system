@@ -25,7 +25,12 @@ public class BookController extends BaseController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateBook(@PathVariable Long id, @RequestBody BookDto bookDto) {
-        return getAppResponse(HttpStatus.OK, "Updated successfully", bookService.updateBook(id, bookDto));
+        try {
+            return getAppResponse(HttpStatus.OK, "Updated successfully", bookService.updateBook(id, bookDto));
+        } catch (BookNotFound ex){
+            return new ResponseEntity<>("Book with this id " + id + " number not found", HttpStatus.BAD_REQUEST);
+
+        }
     }
 
     @GetMapping("/{id}")
@@ -47,7 +52,11 @@ public class BookController extends BaseController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteBook(@PathVariable Long id) {
-        return getAppResponse(HttpStatus.OK, "book Deletion is successfully", bookService.deleteBook(id));
+        try {
+            return getAppResponse(HttpStatus.OK, "book Deletion is successfully", bookService.deleteBook(id));
+        } catch (BookNotFound ex){
+            return new ResponseEntity<>("Book with this id " + id + " number not found", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @PostMapping("/add/author")

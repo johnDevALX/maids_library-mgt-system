@@ -1,5 +1,6 @@
 package com.ekene.maids_librarymanagementsystem.api;
 
+import com.ekene.maids_librarymanagementsystem.exception.PatronNotFound;
 import com.ekene.maids_librarymanagementsystem.patron.dto.PatronDto;
 import com.ekene.maids_librarymanagementsystem.patron.service.PatronService;
 import com.ekene.maids_librarymanagementsystem.utils.BaseController;
@@ -27,12 +28,20 @@ public class PatronController extends BaseController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updatePatron(@PathVariable Long id, @RequestBody PatronDto patronDto) {
-        return getAppResponse(HttpStatus.OK, "Updated successfully", patronService.updatePatron(id, patronDto));
+        try {
+            return getAppResponse(HttpStatus.OK, "Updated successfully", patronService.updatePatron(id, patronDto));
+        }catch (PatronNotFound ex){
+            return new ResponseEntity<>("Patron with this id " + id + " number not found", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getPatron(@PathVariable Long id) {
-        return getAppResponse(HttpStatus.OK, "Retrieved successfully", patronService.getPatron(id));
+        try {
+            return getAppResponse(HttpStatus.OK, "Retrieved successfully", patronService.getPatron(id));
+        }catch (PatronNotFound ex){
+            return new ResponseEntity<>("Patron with this id " + id + " number not found", HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping()
@@ -45,6 +54,10 @@ public class PatronController extends BaseController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteBook(@PathVariable Long id) {
-        return getAppResponse(HttpStatus.OK, "patron Deletion is successfully", patronService.deletePatron(id));
+        try {
+            return getAppResponse(HttpStatus.OK, "patron Deletion is successfully", patronService.deletePatron(id));
+        }catch (PatronNotFound ex){
+            return new ResponseEntity<>("Patron with this id " + id + " number not found", HttpStatus.BAD_REQUEST);
+        }
     }
 }
