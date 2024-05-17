@@ -23,8 +23,8 @@ public class SystemCache {
         if (Objects.isNull(book)) {
             return;
         }
-        getBookMap().setMaxSize(2000, EvictionMode.LRU);
-        getBookMap().put(book.getId(), book, 14, TimeUnit.DAYS);
+        getBookMap().setMaxSize(500, EvictionMode.LRU);
+        getBookMap().put(book.getId(), book, 24, TimeUnit.HOURS);
     }
 
     @SneakyThrows
@@ -32,8 +32,8 @@ public class SystemCache {
         if (Objects.isNull(patron)) {
             return;
         }
-        getPatronMap().setMaxSize(2000, EvictionMode.LRU);
-        getPatronMap().put(patron.getId(), patron, 14, TimeUnit.DAYS);
+        getPatronMap().setMaxSize(500, EvictionMode.LRU);
+        getPatronMap().put(patron.getId(), patron, 24, TimeUnit.HOURS);
     }
 
     @SneakyThrows

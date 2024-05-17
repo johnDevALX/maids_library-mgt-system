@@ -15,10 +15,7 @@ public class AuthorService {
 
     public Author saveAuthor(AuthorDto authorDto){
         Author author = new Author();
-        log.info("Author dto class [{}]", authorDto);
         author.save(authorDto);
-        log.info("Author  class [{}]", author);
-
         return authorRepository.save(author);
     }
 }

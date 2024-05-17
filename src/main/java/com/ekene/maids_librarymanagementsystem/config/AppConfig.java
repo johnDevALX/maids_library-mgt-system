@@ -14,5 +14,4 @@ import org.springframework.context.annotation.Configuration;
 public class AppConfig {
     private String secret;
     private String redisConn;
-    private String expirationDuration;
 }
