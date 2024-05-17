@@ -4,4 +4,12 @@ spring:
   profiles:
     active: local
 
-#Provide config postgres db connection, redis and jwt secret
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+    show-sql: false
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+#Provide config for postgres db connection, redis host and jwt secret

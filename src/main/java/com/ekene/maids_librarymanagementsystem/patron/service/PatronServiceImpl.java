@@ -25,12 +25,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PatronServiceImpl implements PatronService{
     private final PatronRepository patronRepository;
-    private final JwtUtil jwtUtil;
     private final SystemCache systemCache;
     @Override
-    public PatronDto addPatron(PatronDto patronDto, String token) {
-        String email = jwtUtil.extractUsername(token);
-        patronDto.setEmail(email);
+    public PatronDto addPatron(PatronDto patronDto) {
         Patron patron = patronRepository.save(JsonMapper.convertToPatron(patronDto));
         systemCache.addPatron(patron);
         return JsonMapper.convertPatronToDto(patron);

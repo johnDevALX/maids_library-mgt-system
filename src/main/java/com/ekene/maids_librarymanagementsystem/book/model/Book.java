@@ -1,6 +1,5 @@
 package com.ekene.maids_librarymanagementsystem.book.model;
 
-import com.ekene.maids_librarymanagementsystem.utils.model.BaseModel;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -39,12 +39,18 @@ public class Book implements Serializable {
     private Boolean available;
     private Integer inventory;
 
-    @OneToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "book_author",
             joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "author_id")
+            inverseJoinColumns = @JoinColumn(name = "author_id"),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"book_id", "author_id"})
     )
-    @Column(unique = false)
-    private List<Author> authors;
+    private List<Author> authors = new ArrayList<>();
+    @PostLoad
+    private void initAuthors() {
+        if (authors == null) {
+            authors = new ArrayList<>();
+        }
+    }
 }

@@ -17,13 +17,12 @@ public class PatronController extends BaseController {
 
     private final PatronService patronService;
     @PostMapping()
-    public ResponseEntity<?> savePatron(HttpServletRequest request, @RequestBody PatronDto patronDto) {
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            String jwtToken = authHeader.substring(7);
-            return getAppResponse(HttpStatus.CREATED, "saved successfully", patronService.addPatron(patronDto, jwtToken));
+    public ResponseEntity<?> savePatron(@RequestBody PatronDto patronDto) {
+        try {
+            return getAppResponse(HttpStatus.CREATED, "saved successfully", patronService.addPatron(patronDto));
+        } catch (Exception ex){
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(new RuntimeException(), HttpStatus.BAD_REQUEST);
     }
 
     @PutMapping("/{id}")

@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: maids_library-management-system
+
+
+#Provide config for postgres db connection, redis and jwt secret

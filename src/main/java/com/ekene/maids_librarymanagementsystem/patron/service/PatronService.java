@@ -4,7 +4,7 @@ import com.ekene.maids_librarymanagementsystem.patron.dto.PatronDto;
 import org.springframework.data.domain.Page;
 
 public interface PatronService {
-    PatronDto addPatron(PatronDto patronDto, String token);
+    PatronDto addPatron(PatronDto patronDto);
 
     PatronDto updatePatron(Long id, PatronDto patronDto);
 

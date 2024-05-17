@@ -1,6 +1,5 @@
 package com.ekene.maids_librarymanagementsystem.service;
 
-import com.ekene.maids_librarymanagementsystem.auth.JwtUtil;
 import com.ekene.maids_librarymanagementsystem.cache.SystemCache;
 import com.ekene.maids_librarymanagementsystem.patron.dto.PatronDto;
 import com.ekene.maids_librarymanagementsystem.patron.model.MembershipType;
@@ -34,13 +33,10 @@ public class PatronServiceImplTest {
     @Mock
     private PatronRepository patronRepository;
 
-    @Mock
-    private JwtUtil jwtUtil;
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        patronService = new PatronServiceImpl(patronRepository, jwtUtil, systemCache);
+        patronService = new PatronServiceImpl(patronRepository, systemCache);
     }
 
     @Test
@@ -49,7 +45,6 @@ public class PatronServiceImplTest {
         patronDto.setFirstName("tolu");
         patronDto.setLastName("eze");
         patronDto.setMembershipType("REGULAR");
-        String token = "some_token";
         String email = "tolu@example.com";
 
         Patron patron = new Patron();
@@ -58,20 +53,16 @@ public class PatronServiceImplTest {
         patron.setEmail(email);
         patron.setMembershipType(MembershipType.REGULAR);
 
-        JwtUtil jwtUtilMock = mock(JwtUtil.class);
-        when(jwtUtilMock.extractUsername(token)).thenReturn(email);
-
         when(patronRepository.save(any(Patron.class))).thenReturn(patron);
 
-        PatronServiceImpl patronService = new PatronServiceImpl(patronRepository, jwtUtilMock, systemCache);
+        PatronServiceImpl patronService = new PatronServiceImpl(patronRepository, systemCache);
 
-        PatronDto result = patronService.addPatron(patronDto, token);
+        PatronDto result = patronService.addPatron(patronDto);
 
         assertNotNull(result);
         assertEquals("tolu", result.getFirstName());
         assertEquals("eze", result.getLastName());
         assertEquals(email, result.getEmail());
-        verify(jwtUtilMock, times(1)).extractUsername(token);
         verify(patronRepository, times(1)).save(any(Patron.class));
     }
 

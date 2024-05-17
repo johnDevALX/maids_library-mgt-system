@@ -56,8 +56,10 @@ public class BorrowingService {
             bookRepository.save(book);
             patronRepository.save(patron);
             return borrowingRepository.save(borrowingRecord);
-        } else if (Boolean.FALSE.equals(book.getAvailable() || Boolean.FALSE.equals(inventoryCheck))) {
+        } else if (Boolean.FALSE.equals(book.getAvailable())) {
             throw new BookNotAvailableException("The book is not available for borrowing");
+        } else if (Boolean.FALSE.equals(inventoryCheck)) {
+            throw new BookNotAvailableException("The book is not available for borrowing {out of stock}");
         } else {
             throw new PatronBorrowLimitExceededException("The patron has reached the maximum number of allowed books for their membership type");
         }
