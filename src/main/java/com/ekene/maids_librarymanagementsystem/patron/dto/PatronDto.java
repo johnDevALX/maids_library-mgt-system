@@ -21,6 +21,6 @@ public class PatronDto {
     private String address;
     private LocalDate membershipStartDate;
     private LocalDate membershipEndDate;
-    private MembershipType membershipType;
+    private String membershipType;
     private int borrowedBooks;
 }

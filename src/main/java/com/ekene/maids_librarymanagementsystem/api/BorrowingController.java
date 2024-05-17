@@ -1,6 +1,7 @@
 package com.ekene.maids_librarymanagementsystem.api;
 
 import com.ekene.maids_librarymanagementsystem.exception.BookNotAvailableException;
+import com.ekene.maids_librarymanagementsystem.exception.MultipleBorrowingException;
 import com.ekene.maids_librarymanagementsystem.exception.PatronBorrowLimitExceededException;
 import com.ekene.maids_librarymanagementsystem.record.service.BorrowingService;
 import com.ekene.maids_librarymanagementsystem.utils.BaseController;
@@ -23,8 +24,10 @@ public class BorrowingController extends BaseController {
             return getAppResponse(HttpStatus.OK, "Success", borrowingService.borrowBook(bookId, patronId));
         } catch (BookNotAvailableException | PatronBorrowLimitExceededException ex) {
             return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-        } catch (Exception ex) {
-            return new ResponseEntity<>("An error occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (MultipleBorrowingException ex) {
+            return new ResponseEntity<>("unreturned Previous borrowed book from patron", HttpStatus.INTERNAL_SERVER_ERROR);
+        }catch (Exception ex) {
+            return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

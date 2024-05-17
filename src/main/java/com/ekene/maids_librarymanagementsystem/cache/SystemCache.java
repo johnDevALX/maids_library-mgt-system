@@ -40,6 +40,10 @@ public class SystemCache {
     public Book getBook(Long id) {
         return getBookMap().get(id);
     }
+    @SneakyThrows
+    public void deleteBook(Long id) {
+        getBookMap().remove(id);
+    }
     private RMapCache<Long, Book> getBookMap() {
         var bookCache = String.join(".", "maids.cc.library.mgt.system.recent.books");
         return this.redissonClient.getMapCache(bookCache);
@@ -48,6 +52,11 @@ public class SystemCache {
     @SneakyThrows
     public Patron getPatron(Long id) {
         return getPatronMap().get(id);
+    }
+
+    @SneakyThrows
+    public void deletePatron(Long id) {
+        getPatronMap().remove(id);
     }
     private RMapCache<Long, Patron> getPatronMap() {
         var patronCache = String.join(".", "maids.cc.library.mgt.system.recent.patron");

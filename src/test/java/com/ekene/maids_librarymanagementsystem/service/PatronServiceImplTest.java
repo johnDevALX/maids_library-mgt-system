@@ -3,6 +3,7 @@ package com.ekene.maids_librarymanagementsystem.service;
 import com.ekene.maids_librarymanagementsystem.auth.JwtUtil;
 import com.ekene.maids_librarymanagementsystem.cache.SystemCache;
 import com.ekene.maids_librarymanagementsystem.patron.dto.PatronDto;
+import com.ekene.maids_librarymanagementsystem.patron.model.MembershipType;
 import com.ekene.maids_librarymanagementsystem.patron.model.Patron;
 import com.ekene.maids_librarymanagementsystem.patron.repository.PatronRepository;
 import com.ekene.maids_librarymanagementsystem.patron.service.PatronServiceImpl;
@@ -45,6 +46,7 @@ public class PatronServiceImplTest {
         PatronDto patronDto = new PatronDto();
         patronDto.setFirstName("tolu");
         patronDto.setLastName("eze");
+        patronDto.setMembershipType("REGULAR");
         String token = "some_token";
         String email = "tolu@example.com";
 
@@ -52,6 +54,7 @@ public class PatronServiceImplTest {
         patron.setFirstName("tolu");
         patron.setLastName("eze");
         patron.setEmail(email);
+        patron.setMembershipType(MembershipType.REGULAR);
 
         JwtUtil jwtUtilMock = mock(JwtUtil.class);
         when(jwtUtilMock.extractUsername(token)).thenReturn(email);

@@ -5,6 +5,7 @@ import com.ekene.maids_librarymanagementsystem.book.repository.BookRepository;
 import com.ekene.maids_librarymanagementsystem.exception.BookNotAvailableException;
 import com.ekene.maids_librarymanagementsystem.exception.BookNotFound;
 import com.ekene.maids_librarymanagementsystem.exception.BorrowingRecordNotFound;
+import com.ekene.maids_librarymanagementsystem.exception.MultipleBorrowingException;
 import com.ekene.maids_librarymanagementsystem.exception.PatronBorrowLimitExceededException;
 import com.ekene.maids_librarymanagementsystem.exception.PatronNotFound;
 import com.ekene.maids_librarymanagementsystem.patron.model.MembershipType;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +33,14 @@ public class BorrowingService {
                 .orElseThrow(() -> new BookNotFound("Book not found"));
         Patron patron = patronRepository.findById(patronId)
                 .orElseThrow(() -> new PatronNotFound("Patron not found"));
+        Optional<BorrowingRecord> saved = borrowingRepository.findAllByBookAndPatron(book, patron)
+                .stream()
+                .filter(br -> br.getReturnedDate() == null)
+                .findFirst();
 
+        if (saved.isPresent()){
+            throw new MultipleBorrowingException("unreturned Previous borrowed book from patron");
+        }
         boolean patronMax = patron.getBorrowedBooks() < patron.getMembershipType().getMaxBorrowedBooks();
         boolean inventoryCheck = book.getInventory() > 0;
         if (Boolean.TRUE.equals(book.getAvailable()) && patronMax && inventoryCheck) {
@@ -59,8 +68,12 @@ public class BorrowingService {
                 .orElseThrow(() -> new BookNotFound("Book not found"));
         Patron patron = patronRepository.findById(patronId)
                 .orElseThrow(() -> new PatronNotFound("Patron not found"));
-        BorrowingRecord borrowingRecord = borrowingRepository.findByBookAndPatron(book, patron)
-                .orElseThrow(() -> new BorrowingRecordNotFound("Borrowing record not found"));
+        BorrowingRecord borrowingRecord = borrowingRepository.findAllByBookAndPatron(book, patron)
+                .stream()
+                .filter(br -> br.getReturnedDate() == null)
+                .findFirst()
+                .orElseThrow(() -> new BorrowingRecordNotFound("No active borrowing record found for the book and patron"));
+
 
         borrowingRecord.setReturnedDate(returnDate);
         book.setAvailable(true);

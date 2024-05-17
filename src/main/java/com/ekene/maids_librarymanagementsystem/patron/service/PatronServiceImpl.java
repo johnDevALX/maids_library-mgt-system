@@ -4,6 +4,7 @@ import com.ekene.maids_librarymanagementsystem.auth.JwtUtil;
 import com.ekene.maids_librarymanagementsystem.cache.SystemCache;
 import com.ekene.maids_librarymanagementsystem.exception.PatronNotFound;
 import com.ekene.maids_librarymanagementsystem.patron.dto.PatronDto;
+import com.ekene.maids_librarymanagementsystem.patron.model.MembershipType;
 import com.ekene.maids_librarymanagementsystem.patron.model.Patron;
 import com.ekene.maids_librarymanagementsystem.patron.repository.PatronRepository;
 import com.ekene.maids_librarymanagementsystem.utils.JsonMapper;
@@ -48,7 +49,7 @@ public class PatronServiceImpl implements PatronService{
         existingPatron.setAddress(patronDto.getAddress() != null ? patronDto.getAddress() : existingPatron.getAddress());
         existingPatron.setMembershipStartDate(patronDto.getMembershipStartDate() != null ? patronDto.getMembershipStartDate() : existingPatron.getMembershipStartDate());
         existingPatron.setMembershipEndDate(patronDto.getMembershipEndDate() != null ? patronDto.getMembershipEndDate() : existingPatron.getMembershipEndDate());
-        existingPatron.setMembershipType(patronDto.getMembershipType() != null ? patronDto.getMembershipType() : existingPatron.getMembershipType());
+        existingPatron.setMembershipType(patronDto.getMembershipType() != null ? MembershipType.valueOf(patronDto.getMembershipType()) : existingPatron.getMembershipType());
         existingPatron.setBorrowedBooks(Objects.nonNull(patronDto.getBorrowedBooks()) ? patronDto.getBorrowedBooks() : existingPatron.getBorrowedBooks());
 
         Patron updatedPatron = patronRepository.save(existingPatron);
@@ -59,9 +60,14 @@ public class PatronServiceImpl implements PatronService{
     @Override
     public PatronDto getPatron(Long id) {
         Patron existingPatron = systemCache.getPatron(id);
+        log.info("patron [{}]", existingPatron);
+        log.info("patron [{}]", existingPatron);
+
         if (Objects.isNull(existingPatron)){
                existingPatron = patronRepository.findById(id)
                 .orElseThrow(PatronNotFound::new);
+            log.info("patron [{}]", existingPatron);
+
         }
         return JsonMapper.convertPatronToDto(existingPatron);
     }
@@ -80,6 +86,7 @@ public class PatronServiceImpl implements PatronService{
 
     @Override
     public String deletePatron(Long id) {
+        systemCache.deletePatron(id);
         Patron patron = patronRepository.findById(id)
                 .orElseThrow(PatronNotFound::new);
         patronRepository.delete(patron);

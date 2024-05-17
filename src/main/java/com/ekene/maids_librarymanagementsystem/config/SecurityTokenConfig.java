@@ -2,6 +2,7 @@ package com.ekene.maids_librarymanagementsystem.config;
 
 import com.ekene.maids_librarymanagementsystem.auth.CustomUserService;
 import com.ekene.maids_librarymanagementsystem.auth.JwtAuthFilter;
+import com.ekene.maids_librarymanagementsystem.auth.RestAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,8 +60,10 @@ public class SecurityTokenConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authenticationProvider(authenticationProvider())
+//                .exceptionHandling()
+//                .authenticationEntryPoint(new RestAuthenticationEntryPoint())
+//                .and()
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
 
         return http.build();
     }

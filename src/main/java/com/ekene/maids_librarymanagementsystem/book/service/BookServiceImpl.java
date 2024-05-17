@@ -30,10 +30,7 @@ public class BookServiceImpl implements BookService{
 
     @Override
     public BookDto saveBook(BookDto bookDto) {
-        log.info("author emails found [{}]", bookDto.getAuthorEmail());
-
         List<Author> authors = new ArrayList<>(authorRepository.findAllByEmailIgnoreCase(bookDto.getAuthorEmail()));
-        log.info("author found [{}]", authors);
         Book book = bookRepository.save(JsonMapper.convertBookDtoToEntity(bookDto, authors));
         systemCache.addBook(book);
         return JsonMapper.convertBookToDto(book);
@@ -56,7 +53,7 @@ public class BookServiceImpl implements BookService{
         existingBook.setNumberOfPages(bookDto.getNumberOfPages() != null ? bookDto.getNumberOfPages() : existingBook.getNumberOfPages());
         existingBook.setDescription(bookDto.getDescription() != null ? bookDto.getDescription() : existingBook.getDescription());
         existingBook.setRating(bookDto.getRating() != null ? bookDto.getRating() : existingBook.getRating());
-        existingBook.setAuthors(authors);
+        existingBook.setAuthors(authors == null || authors.isEmpty() ? existingBook.getAuthors() : authors);
         existingBook.setAvailable(bookDto.getAvailable() != null ? bookDto.getAvailable() : existingBook.getAvailable());
         existingBook.setInventory(bookDto.getInventory() != null ? bookDto.getInventory() : existingBook.getInventory());
 
@@ -93,6 +90,7 @@ public class BookServiceImpl implements BookService{
 
     @Override
     public String deleteBook(Long id) {
+        systemCache.deleteBook(id);
         Book book = bookRepository.findById(id).orElseThrow(BookNotFound::new);
         bookRepository.delete(book);
         return "Book successfully deleted!";

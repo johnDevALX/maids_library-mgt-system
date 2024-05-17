@@ -3,18 +3,19 @@ package com.ekene.maids_librarymanagementsystem.book.model;
 import com.ekene.maids_librarymanagementsystem.book.dto.AuthorDto;
 import com.ekene.maids_librarymanagementsystem.utils.model.BaseModel;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.io.Serializable;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class Author extends BaseModel {
+public class Author extends BaseModel implements Serializable {
     private String email;
     private String firstName;
     private String lastName;

@@ -64,13 +64,13 @@ public class JsonMapper {
         builder.address(patron.getAddress());
         builder.membershipStartDate(patron.getMembershipStartDate());
         builder.membershipEndDate(patron.getMembershipEndDate());
-        builder.membershipType(patron.getMembershipType());
+        builder.membershipType(String.valueOf(patron.getMembershipType()));
         builder.borrowedBooks(patron.getBorrowedBooks());
         return builder.build();
     }
 
     public static Patron convertToPatron(PatronDto patron){
-        MembershipType membershipType = patron.getMembershipType();
+        MembershipType membershipType = MembershipType.valueOf(patron.getMembershipType());
         Patron.PatronBuilder builder = Patron.builder();
         builder.firstName(patron.getFirstName());
         builder.lastName(patron.getLastName());
